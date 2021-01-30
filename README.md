@@ -1,1 +1,2 @@
-# TruthTableProject
+# Truth Table Project
+#Sravan & Radheshyam
