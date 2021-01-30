@@ -44,7 +44,7 @@ vector<int> convertToBinary(int number, int size){
       for(int i = 0; i < expression.size(); i++){
           vector<string> eval;
           // ( p and q )
-          if(expression.at(i) != "(" || expression.at(i) != "or" || expression.at(i) != "and" || expression.at(i) != ")"){
+          if(expression.at(i) != "(" && expression.at(i) != "or" && expression.at(i) != "and" && expression.at(i) != ")"){
               st.push(to_string(combination[index++]));
           }
           else if(expression.at(i) != ")"){
