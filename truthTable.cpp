@@ -43,8 +43,17 @@ vector<int> convertToBinary(int number, int size){
       int index = 0;
       for(int i = 0; i < expression.size(); i++){
           vector<string> eval;
-          // ( p and q )
-          if(expression.at(i) != "(" && expression.at(i) != "or" && expression.at(i) != "and" && expression.at(i) != ")"){
+          // ( p and q ) 
+          if(expression.at(i) != "(" && expression.at(i) != "or" && expression.at(i) != "and" && expression.at(i) != ")" && expression.at(i) != "not"){
+              if(st.top() == "not"){
+                  if(combination[index] == 0){
+                        combination[index] = 1;
+                  }
+                  else{
+                      combination[index] = 0;
+                  }
+                  st.pop();
+              }
               st.push(to_string(combination[index++]));
           }
           else if(expression.at(i) != ")"){
@@ -115,6 +124,13 @@ int main(){
     varExp.push_back(oneExpression);
    vector<vector<int>> matrix = outputConditions(number);
    evaluateExpressions(matrix, number, varExp);
+   
+   for(int i = 0; i < varExp.size(); i++){
+       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
+              cout << varExp[i] << " ";
+       }
+   }
+   cout << "O" << endl;
    for(int i = 0; i < matrix.size(); i++){
        for(int j = 0; j < matrix[i].size(); j++){
            cout << matrix[i][j] <<  " ";
