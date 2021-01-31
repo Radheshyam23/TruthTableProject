@@ -9,35 +9,28 @@ using namespace std;
 
 vector<int> convertToBinary(int number, int size){
     vector<int> binary;
-    vector<int> binary2;
     while(number != 0){
         int temp = number % 2;
-        binary.push_back(temp);
+        binary.insert(binary.begin() + 0, temp);
         number = number / 2;
     }
-    for(int i = binary.size() - 1; i >= 0; i--){
-        binary2.push_back(binary[i]);
+    while(binary.size() != size){
+        binary.insert(binary.begin() + 0, 0);
     }
-    int index = binary2.size();
-    while(index != size){
-        binary2.insert(binary2.begin() + 0, 0);
-        index++;
-    }
-    return binary2;
+    return binary;
 }
 
 
  vector<vector<int>> outputConditions(int number){
    vector<vector<int>> matrixVar;
    for(int i = 0; i < pow(2, number); i++){
-          vector<int> binary = convertToBinary(i, number);
-          matrixVar.push_back(binary);
+        matrixVar.push_back(convertToBinary(i, number));
    }
    return matrixVar;
 
  }
 
- int evaluateEachCombo(vector<int> combination, vector<string> expression){
+ int evaluateEachCombo(vector<int> &combination, vector<string> &expression){
       stack<string> st;
       
       int index = 0;
@@ -100,7 +93,7 @@ vector<int> convertToBinary(int number, int size){
  }
 
 
- void evaluateExpressions(vector<vector<int>> &matrix, int number, vector<string> expression){
+ void evaluateExpressions(vector<vector<int>> &matrix, vector<string> &expression){
      for(int i = 0; i < matrix.size(); i++){
         int boolOutput = evaluateEachCombo(matrix[i], expression);
         if(boolOutput == -1){
@@ -147,7 +140,7 @@ int main(){
    }
    vector<vector<int>> matrix = outputConditions(number);
    try{
-     evaluateExpressions(matrix, number, varExp);
+     evaluateExpressions(matrix, varExp);
    }
    catch(invalid_argument& e){ 
        cout << "Input not entered right." << endl;
