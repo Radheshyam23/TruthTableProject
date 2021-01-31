@@ -61,10 +61,17 @@ vector<int> convertToBinary(int number, int size){
           }
           else{
               while(st.top() != "("){
+                  if(st.size() == 1 && st.top() != "("){
+                      return -1;
+                  }
                   eval.push_back(st.top());
                   st.pop();
+                 
               }
               st.pop();
+              if(eval.size() < 3){
+                  return -1;
+              }
               if(eval[1] == "or"){
                   bool num = stoi(eval[0]) || stoi(eval[2]);
                   if(num){
@@ -86,6 +93,9 @@ vector<int> convertToBinary(int number, int size){
           }
           
       }
+      if(st.size() > 1){
+          return -1;
+      }
       return stoi(st.top());
  }
 
@@ -93,6 +103,9 @@ vector<int> convertToBinary(int number, int size){
  void evaluateExpressions(vector<vector<int>> &matrix, int number, vector<string> expression){
      for(int i = 0; i < matrix.size(); i++){
         int boolOutput = evaluateEachCombo(matrix[i], expression);
+        if(boolOutput == -1){
+            throw std::invalid_argument("");
+        }
         matrix[i].push_back(boolOutput);
      }
  }
@@ -122,8 +135,25 @@ int main(){
         
     }
     varExp.push_back(oneExpression);
+    int count = 0;
+     for(int i = 0; i < varExp.size(); i++){
+       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
+              count++;
+       }
+   }
+   if(count != number){
+       cout << "Number of variables does not match with input." << endl;
+       return 0;
+   }
    vector<vector<int>> matrix = outputConditions(number);
-   evaluateExpressions(matrix, number, varExp);
+   try{
+     evaluateExpressions(matrix, number, varExp);
+   }
+   catch(invalid_argument& e){ 
+       cout << "Input not entered right." << endl;
+       return 0;
+   }
+  
    
    for(int i = 0; i < varExp.size(); i++){
        if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
