@@ -127,16 +127,16 @@ int main(){
    
    for(int i = 0; i < varExp.size(); i++){
        if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
-              cout << varExp[i] << " ";
+              cout << varExp[i] << "| ";
        }
    }
-   cout << "O" << endl;
+   cout << "O| " << endl;
    for(int i = 0; i < matrix.size(); i++){
        for(int j = 0; j < matrix[i].size(); j++){
-           cout << matrix[i][j] <<  " ";
+           cout << matrix[i][j] <<  "| ";
        }
-       cout << endl;
-   }
+        cout << endl;
+    }
 
    return 0;
 
