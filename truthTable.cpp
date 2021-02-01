@@ -5,10 +5,10 @@
 #include <string.h>
 #include <string>
 #include <unordered_map>
-using namespace std; 
+using namespace std;
 
 
-bool isValid(vector<string> &expression){ 
+bool isValid(vector<string> &expression){           //checks whether brackets are properly placed
    vector<string> brackets;
    for(int i = 0; i < expression.size(); i++){
        if(expression[i] == ")" || expression[i] == "("){
@@ -63,11 +63,19 @@ vector<int> convertToBinary(int number, int size){
 
  }
 
+bool CalcXOR(string a, string b)
+{
+    if((stoi(a)==0 && stoi(b)==1) || (stoi(a)==1 && stoi(b)==0))
+        return true;
+    else
+        return false;
+}
+
  int evaluateEachCombo(unordered_map<string, int> map, vector<string> &expression){
       stack<string> st;
       for(int i = 0; i < expression.size(); i++){
           vector<string> eval;
-          
+
           if(map.find(expression[i]) != map.end()){
                 if(st.size() > 0 && st.top() == "not"){
                     st.pop();
@@ -102,7 +110,7 @@ vector<int> convertToBinary(int number, int size){
                       st.pop();
                        if(num){
                         st.push("0");
-                       } 
+                       }
                        else{
                         st.push("1");
                        }
@@ -122,7 +130,7 @@ vector<int> convertToBinary(int number, int size){
                       st.pop();
                        if(num){
                         st.push("0");
-                       } 
+                       }
                        else{
                         st.push("1");
                        }
@@ -135,20 +143,40 @@ vector<int> convertToBinary(int number, int size){
                         st.push("0");
                     }
                 }
-              }
 
-          }
+            }
 
-          
+            else if(eval[1] == "xor")
+            {
+                bool num = CalcXOR(eval[0],eval[2]);
+
+                if(st.size() > 0 && st.top() == "not")
+                {
+                    st.pop();
+                    if(num)
+                        st.push("0");
+
+                    else
+                        st.push("1");
+                }
+                else
+                {
+                    if(num)
+                        st.push("1");
+
+                    else
+                        st.push("0");
+                }
+            }
+        }
       }
-      
-      return stoi(st.top());
- }
+    return stoi(st.top());
+}
 
 
  void evaluateExpressions(vector<vector<int>> &matrix, vector<string> &expression, vector<string> variables){
      unordered_map<string, int> map;
-     for(int i = 0; i < matrix.size(); i++){ 
+     for(int i = 0; i < matrix.size(); i++){
          for(int k = 0; k < variables.size(); k++){
             map[variables[k]] = matrix[i][k];
          }
@@ -156,12 +184,12 @@ vector<int> convertToBinary(int number, int size){
      }
  }
 
- 
+
 
 int main(){
    int number = 0;
    string expression = "";
-   cout << "Number of Variables? ";
+   cout << "Number of Unique Variables? ";
    cin >> number;
    cout << endl;
    cout << "Expression? ";
@@ -170,8 +198,8 @@ int main(){
    string oneExpression = "";
    vector<string> varExp;
    vector<string> variables;
-   // input: ( p and q )
-    for(int i = 0; i < expression.length(); i++){
+
+   for(int i = 0; i < expression.length(); i++){
         if(expression.at(i) != ' '){
             oneExpression += expression.at(i);
         }
@@ -179,13 +207,14 @@ int main(){
             varExp.push_back(oneExpression);
             oneExpression = "";
         }
-        
+
     }
     varExp.push_back(oneExpression);
     unordered_map<string, int> map;
-   
+
      for(int i = 0; i < varExp.size(); i++){
-       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
+       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not" && varExp[i]!= "xor")
+        {
               if(map.find(varExp[i]) == map.end()){
                    map[varExp[i]] = 1;
                    variables.push_back(varExp[i]);
@@ -195,7 +224,7 @@ int main(){
               }
        }
    }
-   
+
    if(map.size() != number){
        cout << "Number of variables does not match with input." << endl;
        return 0;
@@ -208,14 +237,12 @@ int main(){
     try{
      evaluateExpressions(matrix, varExp, variables);
     }
-   catch(invalid_argument& e){ 
+   catch(invalid_argument& e){
        cout << "Input not entered right." << endl;
        return 0;
-   } 
+   }
 
 
-  
-   
    for(int i = 0; i < variables.size(); i++){
        cout << variables[i] << "| ";
    }
@@ -230,10 +257,3 @@ int main(){
    return 0;
 
 }
-
-
-
-
-
-
-
