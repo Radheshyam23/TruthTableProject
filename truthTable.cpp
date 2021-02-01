@@ -7,7 +7,7 @@
 using namespace std; 
 
 
-bool isValid(vector<string> &expression){
+bool isValid(vector<string> &expression){ 
    vector<string> brackets;
    for(int i = 0; i < expression.size(); i++){
        if(expression[i] == ")" || expression[i] == "("){
@@ -28,7 +28,7 @@ bool isValid(vector<string> &expression){
            if(check.size() == 0 && brackets[i] == ")"){
                return false;
            }
-           check.push(expression[i]);
+           check.push(brackets[i]);
        }
    }
    if(check.size() >= 1){
@@ -68,7 +68,7 @@ vector<int> convertToBinary(int number, int size){
       int index = 0;
       for(int i = 0; i < expression.size(); i++){
           vector<string> eval;
-          // ( p and q ) 
+          // not ( 0 and 0 )
           if(expression.at(i) != "(" && expression.at(i) != "or" && expression.at(i) != "and" && expression.at(i) != ")" && expression.at(i) != "not"){
               if(st.top() == "not"){
                   if(combination[index] == 0){
@@ -86,41 +86,56 @@ vector<int> convertToBinary(int number, int size){
           }
           else{
               while(st.top() != "("){
-                  if(st.size() == 1 && st.top() != "("){
-                      return -1;
-                  }
                   eval.push_back(st.top());
                   st.pop();
-                 
-              }
+                }
               st.pop();
-              if(eval.size() < 3){
-                  return -1;
-              }
               if(eval[1] == "or"){
                   bool num = stoi(eval[0]) || stoi(eval[2]);
-                  if(num){
-                      st.push("1");
+                  if(st.top() == "not"){
+                      st.pop();
+                       if(num){
+                        st.push("0");
+                       } 
+                       else{
+                        st.push("1");
+                       }
                   }
                   else{
-                     st.push("0");
+                    if(num){
+                        st.push("1");
+                    }
+                    else{
+                        st.push("0");
+                    }
                   }
               }
               else if(eval[1] == "and"){
                    bool num = stoi(eval[0]) && stoi(eval[2]);
-                  if(num){
-                      st.push("1");
-                  }
-                  else{
-                     st.push("0");
-                  }
+                   if(st.top() == "not"){
+                      st.pop();
+                       if(num){
+                        st.push("0");
+                       } 
+                       else{
+                        st.push("1");
+                       }
+                   }
+                   else{
+                    if(num){
+                        st.push("1");
+                    }
+                    else{
+                        st.push("0");
+                    }
+                }
               }
+
           }
+
           
       }
-      if(st.size() > 1){
-          return -1;
-      }
+      
       return stoi(st.top());
  }
 
@@ -171,7 +186,7 @@ int main(){
        return 0;
    }
    if(!isValid(varExp)){
-       cout << "Input not entered right." << endl;
+       cout << "Input not right." << endl;
        return 0;
    }
    vector<vector<int>> matrix = outputConditions(number);
@@ -185,7 +200,7 @@ int main(){
   
    
    for(int i = 0; i < varExp.size(); i++){
-       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != " " && varExp[i] != "not"){
+       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != " " && varExp[i] != "not" && varExp[i] != ")"){
               cout << varExp[i] << "| ";
        }
    }
@@ -200,6 +215,8 @@ int main(){
    return 0;
 
 }
+
+
 
 
 
