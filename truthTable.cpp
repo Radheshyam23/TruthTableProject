@@ -7,6 +7,38 @@
 using namespace std; 
 
 
+bool isValid(vector<string> &expression){
+   vector<string> brackets;
+   for(int i = 0; i < expression.size(); i++){
+       if(expression[i] == ")" || expression[i] == "("){
+           brackets.push_back(expression[i]);
+       }
+   }
+   stack<string> check;
+   for(int i = 0; i < brackets.size(); i++){
+       if(check.size() > 0 && brackets[i] == ")"){
+           if(check.top() != "("){
+               return false;
+           }
+           else{
+               check.pop();
+           }
+       }
+       else{
+           if(check.size() == 0 && brackets[i] == ")"){
+               return false;
+           }
+           check.push(expression[i]);
+       }
+   }
+   if(check.size() >= 1){
+       return false;
+   }
+   return true;
+
+}
+
+
 vector<int> convertToBinary(int number, int size){
     vector<int> binary;
     while(number != 0){
@@ -138,6 +170,10 @@ int main(){
        cout << "Number of variables does not match with input." << endl;
        return 0;
    }
+   if(!isValid(varExp)){
+       cout << "Input not entered right." << endl;
+       return 0;
+   }
    vector<vector<int>> matrix = outputConditions(number);
    try{
      evaluateExpressions(matrix, varExp);
@@ -149,7 +185,7 @@ int main(){
   
    
    for(int i = 0; i < varExp.size(); i++){
-       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
+       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != " " && varExp[i] != "not"){
               cout << varExp[i] << "| ";
        }
    }
