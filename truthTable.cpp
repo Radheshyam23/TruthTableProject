@@ -4,6 +4,7 @@
 #include <stack>
 #include <string.h>
 #include <string>
+#include <unordered_map>
 using namespace std; 
 
 
@@ -62,28 +63,33 @@ vector<int> convertToBinary(int number, int size){
 
  }
 
- int evaluateEachCombo(vector<int> &combination, vector<string> &expression){
+ int evaluateEachCombo(unordered_map<string, int> map, vector<string> &expression){
       stack<string> st;
-      
-      int index = 0;
       for(int i = 0; i < expression.size(); i++){
           vector<string> eval;
-          // not ( 0 and 0 )
-          if(expression.at(i) != "(" && expression.at(i) != "or" && expression.at(i) != "and" && expression.at(i) != ")" && expression.at(i) != "not"){
-              if(st.top() == "not"){
-                  if(combination[index] == 0){
-                        combination[index] = 1;
-                  }
-                  else{
-                      combination[index] = 0;
-                  }
+          
+          if(map.find(expression[i]) != map.end()){
+                if(st.size() > 0 && st.top() == "not"){
+                    st.pop();
+                    if(map[expression[i]] == 0){
+                        st.push("1");
+                    }
+                    else{
+                        st.push("0");
+                    }
+                }
+                else{
+                   st.push(to_string(map[expression[i]]));
+                }
+           }
+          else if(expression.at(i) != ")"){
+              if(st.size() > 0 && expression[i] == "not" && st.top() == "not"){
                   st.pop();
               }
-              st.push(to_string(combination[index++]));
-          }
-          else if(expression.at(i) != ")"){
-              st.push(expression.at(i));
-          }
+              else{
+                  st.push(expression.at(i));
+              }
+            }
           else{
               while(st.top() != "("){
                   eval.push_back(st.top());
@@ -92,7 +98,7 @@ vector<int> convertToBinary(int number, int size){
               st.pop();
               if(eval[1] == "or"){
                   bool num = stoi(eval[0]) || stoi(eval[2]);
-                  if(st.top() == "not"){
+                  if(st.size() > 0 && st.top() == "not"){
                       st.pop();
                        if(num){
                         st.push("0");
@@ -111,8 +117,8 @@ vector<int> convertToBinary(int number, int size){
                   }
               }
               else if(eval[1] == "and"){
-                   bool num = stoi(eval[0]) && stoi(eval[2]);
-                   if(st.top() == "not"){
+                  bool num = stoi(eval[0]) && stoi(eval[2]);
+                   if(st.size() > 0 && st.top() == "not"){
                       st.pop();
                        if(num){
                         st.push("0");
@@ -140,13 +146,13 @@ vector<int> convertToBinary(int number, int size){
  }
 
 
- void evaluateExpressions(vector<vector<int>> &matrix, vector<string> &expression){
-     for(int i = 0; i < matrix.size(); i++){
-        int boolOutput = evaluateEachCombo(matrix[i], expression);
-        if(boolOutput == -1){
-            throw std::invalid_argument("");
-        }
-        matrix[i].push_back(boolOutput);
+ void evaluateExpressions(vector<vector<int>> &matrix, vector<string> &expression, vector<string> variables){
+     unordered_map<string, int> map;
+     for(int i = 0; i < matrix.size(); i++){ 
+         for(int k = 0; k < variables.size(); k++){
+            map[variables[k]] = matrix[i][k];
+         }
+        matrix[i].push_back(evaluateEachCombo(map, expression));
      }
  }
 
@@ -163,6 +169,7 @@ int main(){
    getline(cin, expression);
    string oneExpression = "";
    vector<string> varExp;
+   vector<string> variables;
    // input: ( p and q )
     for(int i = 0; i < expression.length(); i++){
         if(expression.at(i) != ' '){
@@ -175,13 +182,21 @@ int main(){
         
     }
     varExp.push_back(oneExpression);
-    int count = 0;
+    unordered_map<string, int> map;
+   
      for(int i = 0; i < varExp.size(); i++){
        if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != ")" && varExp[i] != "not"){
-              count++;
+              if(map.find(varExp[i]) == map.end()){
+                   map[varExp[i]] = 1;
+                   variables.push_back(varExp[i]);
+              }
+              else{
+                  map[varExp[i]]++;
+              }
        }
    }
-   if(count != number){
+   
+   if(map.size() != number){
        cout << "Number of variables does not match with input." << endl;
        return 0;
    }
@@ -190,19 +205,19 @@ int main(){
        return 0;
    }
    vector<vector<int>> matrix = outputConditions(number);
-   try{
-     evaluateExpressions(matrix, varExp);
-   }
+    try{
+     evaluateExpressions(matrix, varExp, variables);
+    }
    catch(invalid_argument& e){ 
        cout << "Input not entered right." << endl;
        return 0;
-   }
+   } 
+
+
   
    
-   for(int i = 0; i < varExp.size(); i++){
-       if(varExp[i] != "(" && varExp[i] != "or" && varExp[i] != "and" && varExp[i] != " " && varExp[i] != "not" && varExp[i] != ")"){
-              cout << varExp[i] << "| ";
-       }
+   for(int i = 0; i < variables.size(); i++){
+       cout << variables[i] << "| ";
    }
    cout << "O| " << endl;
    for(int i = 0; i < matrix.size(); i++){
@@ -215,6 +230,8 @@ int main(){
    return 0;
 
 }
+
+
 
 
 
